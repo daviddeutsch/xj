@@ -1,0 +1,24 @@
+{
+	"name": "daviddeutsch/xj",
+	"type": "library",
+	"description": "A cross-version joomla compatibility library",
+	"keywords": ["joomla"],
+	"homepage": "http://github.com/daviddeutsch/xj",
+	"license": "BSD",
+	"authors": [
+		{
+			"name": "David Deutsch",
+			"email": "skore@valanx.org",
+			"homepage": "http://www.valanx.org",
+			"role": "Chief Botanist"
+		}
+	],
+	"require": {
+		"php": ">=5.2.0"
+	},
+	"autoload": {
+		"psr-0": {
+			"xJ": "/src"
+		}
+	}
+}

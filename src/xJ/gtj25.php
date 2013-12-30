@@ -3,7 +3,7 @@ class xJLanguageHandler extends xJLanguageHandlerCommon
 {
 	static function loadList( $list )
 	{
-		if ( empty( $list ) ) {
+		if ( empty($list) ) {
 			return;
 		}
 
