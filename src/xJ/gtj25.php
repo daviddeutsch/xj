@@ -235,8 +235,8 @@ class xJACLhandler extends xJACLhandlerCommon
 		foreach ( $acllist as $aclli ) {
 			$acll = new stdClass();
 
-			$acll->group_id	= $aclli->id;
-			$acll->name		= $aclli->title;
+			$acll->group_id = $aclli->id;
+			$acll->name     = $aclli->title;
 
 			$list[] = $acll;
 		}
@@ -283,25 +283,25 @@ class xJSessionHandler extends xJSessionHandlerCommon
 	{
 		$user = JFactory::getUser();
 
-		if ( !is_array( $gid ) && !empty( $gid ) ) {
-			$gid = array( $gid );
-		} elseif ( empty( $gid ) ) {
+		if ( !is_array($gid) && !empty($gid) ) {
+			$gid = array($gid);
+		} elseif ( empty($gid) ) {
 			$gid = array();
 		}
 
-		if ( !is_array( $removegid ) && !empty( $removegid ) ) {
-			$removegid = array( $removegid );
+		if ( !is_array($removegid) && !empty($removegid) ) {
+			$removegid = array($removegid);
 		}
 
-		if ( !empty( $removegid ) ) {
-			xJACLhandler::removeGIDs( (int) $userid, $removegid );
+		if ( !empty($removegid) ) {
+			xJACLhandler::removeGIDs((int) $userid, $removegid);
 		}
 
 		$info = array();
 
 		// Set GID and usertype
-		if ( !empty( $gid ) ) {
-			$info = xJACLhandler::setGIDs( (int) $userid, $gid );
+		if ( !empty($gid) ) {
+			$info = xJACLhandler::setGIDs((int) $userid, $gid);
 		}
 
 		$session = $this->getSession( $userid );
@@ -310,35 +310,35 @@ class xJSessionHandler extends xJSessionHandlerCommon
 			return true;
 		}
 
-		if ( !empty( $sessionextra ) ) {
-			if ( is_array( $sessionextra ) ) {
+		if ( !empty($sessionextra) ) {
+			if ( is_array($sessionextra) ) {
 				foreach ( $sessionextra as $sk => $sv ) {
 					$session['user']->$sk = $sv;
 
 					if ( $userid == $user->id ) {
-						$user->$sk	= $sv;
+						$user->$sk = $sv;
 					}
 				}
 			}
 		}
 
-		if ( isset( $session['user'] ) ) {
+		if ( isset($session['user']) ) {
 			$user = JFactory::getUser();
 
-			$sgsids = JAccess::getGroupsByUser( $userid );
+			$sgsids = JAccess::getGroupsByUser($userid);
 
-			if ( !empty( $gid ) ) {
+			if ( !empty($gid) ) {
 				foreach ( $gid as $g ) {
-					if ( !in_array( $g, $sgsids ) ) {
+					if ( !in_array($g, $sgsids) ) {
 						$sgsids[] = $g;
 					}
 				}
 			}
 
-			if ( !empty( $removegid ) ) {
+			if ( !empty($removegid) ) {
 				foreach ( $sgsids as $k => $g ) {
-					if ( in_array( $g, $removegid ) ) {
-						unset( $sgsids[$k] );
+					if ( in_array($g, $removegid) ) {
+						unset($sgsids[$k]);
 					}
 				}
 			}
@@ -348,29 +348,30 @@ class xJSessionHandler extends xJSessionHandlerCommon
 			$db->setQuery(
 				'SELECT `title`, `id`'
 				. ' FROM #__usergroups'
-				. ' WHERE `id` IN ('.implode( ',', $sgsids ).')'
+				. ' WHERE `id` IN ('.implode(',', $sgsids).')'
 			);
+
 			$sgslist = $db->loadObjectList();
 
 			$sgs = array();
 
 			foreach ( $sgslist as $gidgroup ) {
-				if ( !in_array( $gidgroup->id, $removegid ) ) {
+				if ( !in_array($gidgroup->id, $removegid) ) {
 					$sgs[$gidgroup->title] = $gidgroup->id;
 				}
 			}
 
 			if ( $userid == $user->id ) {
-				$user->set( 'groups', $sgs );
+				$user->set('groups', $sgs);
 
-				$user->set( '_authLevels', xJSessionHandler::getAuthorisedViewLevels($userid) );
-				$user->set( '_authGroups', xJSessionHandler::getGroupsByUser($userid) );
+				$user->set('_authLevels', xJSessionHandler::getAuthorisedViewLevels($userid));
+				$user->set('_authGroups', xJSessionHandler::getGroupsByUser($userid));
 			}
 
-			$session['user']->set( 'groups', $sgs );
+			$session['user']->set('groups', $sgs);
 
-			$session['user']->set( '_authLevels', xJSessionHandler::getAuthorisedViewLevels($userid) );
-			$session['user']->set( '_authGroups', xJSessionHandler::getGroupsByUser($userid) );
+			$session['user']->set('_authLevels', xJSessionHandler::getAuthorisedViewLevels($userid));
+			$session['user']->set('_authGroups', xJSessionHandler::getGroupsByUser($userid));
 		}
 
 		return $this->putSession($userid, $session, $gid[0], $info[$gid[0]]);
@@ -384,11 +385,11 @@ class xJSessionHandler extends xJSessionHandlerCommon
 
 		$db->setQuery(
 			'UPDATE #__session'
-			. ' SET `data` = \''.xJ::escape( $db, $sdata ).'\''
-			. ' WHERE `userid` = \''.(int) $userid.'\''
+			. ' SET `data` = \''.xJ::escape($db, $sdata).'\''
+			. ' WHERE `userid` = \''.((int) $userid).'\''
 		);
 
-		$db->query() or die( $db->stderr() );
+		$db->query() or die($db->stderr());
 
 		return true;
 	}

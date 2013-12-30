@@ -90,12 +90,12 @@ class xJACLhandler extends xJACLhandlerCommon
 
 		// If we have no aro id, something went wrong and we need to create it
 		if  (empty($aro_id) ) {
-			$metaUser = new metaUser($userid);
+			$user = new JTableUser($userid);
 
 			$db->setQuery(
 				'INSERT INTO #__core_acl_aro'
 				. ' (`section_value`, `value`, `order_value`, `name`, `hidden`)'
-				. ' VALUES (\'users\', \''.$userid.'\', \'0\', \''.$metaUser->cmsUser->name.'\', \'0\')'
+				. ' VALUES (\'users\', \''.$userid.'\', \'0\', \''.$user->name.'\', \'0\')'
 			);
 
 			$db->query();
@@ -141,7 +141,7 @@ class xJACLhandler extends xJACLhandlerCommon
 		if ( $block ) {
 			$app = JFactory::getApplication();
 
-			$app->redirect('index.php', _NOT_AUTH);
+			$app->redirect('index.php', 'Not Authorized');
 		}
 	}
 

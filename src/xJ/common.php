@@ -149,7 +149,7 @@ class xJSessionHandlerCommon
 		$viewLevels = array();
 
 		// Only load the view levels once.
-		if (empty($viewLevels)) {
+		if ( empty($viewLevels) ) {
 			// Get a database object.
 			$db	= JFactory::getDBO();
 
