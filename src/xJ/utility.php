@@ -194,9 +194,95 @@ class xJUtility
 				. ' (\''.implode( '\', \'', array_values( $insert ) ).'\')'
 			);
 
-			$db->query() or die($db->stderr());
+			return $db->query() or die($db->stderr());
 		}
 
 		return null;
+	}
+
+	static function multiQueryExec( $queri )
+	{
+		$db = JFactory::getDBO();
+
+		foreach ( $queri as $query ) {
+			$db->setQuery($query);
+
+			$db->query() or die($db->stderr());
+		}
+	}
+
+	static function ColumninTable( $component, $column, $table )
+	{
+		$db = JFactory::getDBO();
+
+		$db->setQuery(
+			'SHOW COLUMNS FROM #__'.$component.'_'.$table
+			. ' LIKE \''.$column.'\''
+		);
+
+		$result = $db->loadObject();
+
+		if( is_object($result) ) {
+			if ( $result->Field == $column ) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	static function dropColifExists( $component, $column, $table )
+	{
+		if ( self::ColumninTable( $component, $column, $table ) ) {
+			return self::dropColumn( $component, $table, $column );
+		}
+
+		return null;
+	}
+
+	static function addColifNotExists( $component, $column, $options, $table )
+	{
+		if ( !self::ColumninTable( $component, $column, $table ) ) {
+			return self::addColumn( $component, $table, $column, $options );
+		}
+
+		return null;
+	}
+
+	static function addColumn( $component, $table, $column, $options )
+	{
+		$db = JFactory::getDBO();
+
+		$db->setQuery(
+			'ALTER TABLE #__'.$component.'_'.$table
+			. ' ADD COLUMN `'.$column.'` '.$options
+		);
+
+		return $db->query() or die($db->stderr());
+	}
+
+	static function dropTableifExists( $component, $table )
+	{
+		$db = JFactory::getDBO();
+
+		$db->setQuery(
+			'DROP TABLE IF EXISTS #__'.$component.'_'.$table
+		);
+
+		return $db->query() or die($db->stderr());
+	}
+
+	static function dropColumn( $component, $table, $column )
+	{
+		$db = JFactory::getDBO();
+
+		$db->setQuery(
+			'ALTER TABLE #__'.$component.'_'.$table
+			. ' DROP COLUMN `'.$column.'`'
+		);
+
+		return $db->query() or die($db->stderr());
 	}
 }
