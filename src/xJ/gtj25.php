@@ -7,11 +7,11 @@ class xJLanguageHandler extends xJLanguageHandlerCommon
 			return;
 		}
 
-		$lang =& JFactory::getLanguage();
+		$lang = JFactory::getLanguage();
 
 		foreach ( $list as $name => $path ) {
-			$lang->load( $name, $path, 'en-GB', true );
-			$lang->load( $name, $path, $lang->get('tag'), true );
+			$lang->load($name, $path, 'en-GB', true);
+			$lang->load($name, $path, $lang->get('tag'), true);
 		}
 
 		return;
@@ -19,17 +19,17 @@ class xJLanguageHandler extends xJLanguageHandlerCommon
 
 	static function getSystemLanguages()
 	{
-		$fdir = JPATH_SITE . '/language';
+		$fdir = JPATH_SITE.'/language';
 
-		$list = xJUtility::getFileArray( $fdir, null, true, true );
+		$list = xJUtility::getFileArray($fdir, null, true, true);
 
-		$adir = JPATH_SITE . '/administrator/language';
+		$adir = JPATH_SITE.'/administrator/language';
 
-		$list = array_merge( $list, xJUtility::getFileArray( $adir, null, true, true ) );
+		$list = array_merge( $list, xJUtility::getFileArray($adir, null, true, true) );
 
 		$languages = array();
 		foreach ( $list as $li ) {
-			if ( ( strpos( $li, '-' ) !== false ) && !in_array( $li, $languages ) ) {
+			if ( (strpos($li, '-') !== false) && !in_array($li, $languages) ) {
 				$languages[] = $li;
 			}
 		}
@@ -51,35 +51,38 @@ class xJACLhandler extends xJACLhandlerCommon
 
 	function setGID( $userid, $gid, $gid_name )
 	{
-		$db = &JFactory::getDBO();
+		$db = JFactory::getDBO();
 
 		// Make sure the user does not have this group assigned yet
-		$query = 'SELECT `user_id`'
-				. ' FROM #__user_usergroup_map'
-				. ' WHERE `user_id` = \'' . $userid . '\''
-				. ' AND `group_id` = \'' . $gid . '\''
-				;
-		$db->setQuery( $query );
+		$db->setQuery(
+			'SELECT `user_id`'
+			. ' FROM #__user_usergroup_map'
+			. ' WHERE `user_id` = \''.$userid.'\''
+			. ' AND `group_id` = \''.$gid.'\''
+		);
+
 		$id = $db->loadResult();
 
-		if ( empty( $id ) ) {
-			$query = 'INSERT INTO `#__user_usergroup_map` (`user_id`, `group_id`)'
-					. ' VALUES ('.$userid.', '.$gid.')'
-					;
-			$db->setQuery( $query );
-			$db->query() or die( $db->stderr() );
+		if ( empty($id) ) {
+			$db->setQuery(
+				'INSERT INTO `#__user_usergroup_map` (`user_id`, `group_id`)'
+				. ' VALUES ('.$userid.', '.$gid.')'
+			);
+
+			$db->query() or die($db->stderr());
 		}
 	}
 
 	function setGIDsTakeNames( $userid, $gid )
 	{
-		$db = &JFactory::getDBO();
+		$db = JFactory::getDBO();
 
 		$query = 'SELECT `title`'
 				. ' FROM #__usergroups'
-				. ' WHERE `id` = \'' . $gid . '\''
+				. ' WHERE `id` = \''.$gid.'\''
 				;
-		$db->setQuery( $query );
+		$db->setQuery($query);
+
 		$gid_name = $db->loadResult();
 
 		return $gid_name;
@@ -87,21 +90,21 @@ class xJACLhandler extends xJACLhandlerCommon
 
 	function adminBlock( $admin, $manager )
 	{
-		$user = &JFactory::getUser();
+		$user = JFactory::getUser();
 
-		$acl = &JFactory::getACL();
+		$acl = JFactory::getACL();
 
 		$block = false;
 
-		$allowed_groups = xJACLhandler::getAdminGroups( $admin );
+		$allowed_groups = xJACLhandler::getAdminGroups($admin);
 
 		if ( $manager ) {
-			$allowed_groups = array_merge( $allowed_groups, xJACLhandler::getManagerGroups() );
+			$allowed_groups = array_merge($allowed_groups, xJACLhandler::getManagerGroups());
 		}
 
-		$usergroups = $acl->getGroupsByUser( $user->id );
+		$usergroups = $acl->getGroupsByUser($user->id);
 
-		if ( !count( array_intersect( $allowed_groups, $usergroups ) ) ) {
+		if ( !count(array_intersect($allowed_groups, $usergroups)) ) {
 			$block = true;
 		}
 
@@ -114,56 +117,58 @@ class xJACLhandler extends xJACLhandlerCommon
 
 	function userDelete( $userid, $msg )
 	{
-		$user = &JFactory::getUser();
+		$user = JFactory::getUser();
 
 		if ( $userid == $user->id ) {
 			return JText::_('You cannot delete yourself');
 		}
 
-		$acl = &JFactory::getACL();
+		$acl = JFactory::getACL();
 
-		$user = &JFactory::getUser();
+		$user = JFactory::getUser();
 
 		$superadmins = xJACLhandler::getAdminGroups( false );
 
 		$alladmins = xJACLhandler::getAdminGroups();
 
-		$groups = $acl->getGroupsByUser( $userid );
+		$groups = $acl->getGroupsByUser($userid);
 
-		if ( count( array_intersect( $groups, $superadmins ) ) ) {
+		if ( count(array_intersect($groups, $superadmins)) ) {
 			return JText::_('You cannot delete a Super User');
 		}
 
 		$is_admin = false;
-		if ( count( array_intersect( $groups, $alladmins ) ) ) {
+		if ( count(array_intersect($groups, $alladmins)) ) {
 			$is_admin = true;
 		}
 
-		$usergroups = $acl->getGroupsByUser( $user->id );
+		$usergroups = $acl->getGroupsByUser($user->id);
 
 		$deletor_admin = true;
-		if ( count( array_intersect( $usergroups, $superadmins ) ) ) {
+		if ( count(array_intersect($usergroups, $superadmins)) ) {
 			$deletor_admin = false;
 		}
 
 		if ( $is_admin && $deletor_admin ) {
 			return JText::_('Only Super Users can do that');
 		} else {
-			$db = &JFactory::getDBO();
+			$db = JFactory::getDBO();
 
-			$obj = new cmsUser();
+			$obj = new JTableUser($db);
 
-			if ( !$obj->delete( $userid ) ) {
+			if ( !$obj->delete($userid) ) {
 				return $obj->getError();
 			}
 		}
+
+		return true;
 	}
 
 	function getGroupTree( $ex=array() )
 	{
-		$acl = &JFactory::getACL();
+		$acl = JFactory::getACL();
 
-		$user = &JFactory::getUser();
+		$user = JFactory::getUser();
 
 		$ex_groups = array();
 
@@ -184,23 +189,23 @@ class xJACLhandler extends xJACLhandlerCommon
 			$option->text = str_repeat('- ',$option->level).$option->text;
 		}
 
-		$usergroups = $acl->getGroupsByUser( $user->id );
+		$usergroups = $acl->getGroupsByUser($user->id);
 
-		$superadmins = xJACLhandler::getAdminGroups( false );
+		$superadmins = xJACLhandler::getAdminGroups(false);
 
 		$alladmins = xJACLhandler::getAdminGroups();
 
-		if ( !count( array_intersect( $usergroups, $superadmins ) ) ) {
-			$ex_groups = array_merge( $ex_groups, $superadmins );
+		if ( !count(array_intersect($usergroups, $superadmins)) ) {
+			$ex_groups = array_merge($ex_groups, $superadmins);
 		} else {
-			$ex_groups = array_merge( $ex_groups, $alladmins );
+			$ex_groups = array_merge($ex_groups, $alladmins);
 		}
 
 		// remove groups 'above' current user
 		$i = 0;
-		while ( $i < count( $gtree ) ) {
-			if ( in_array( $gtree[$i]->value, $ex_groups ) ) {
-				array_splice( $gtree, $i, 1 );
+		while ( $i < count($gtree) ) {
+			if ( in_array($gtree[$i]->value, $ex_groups) ) {
+				array_splice($gtree, $i, 1);
 			} else {
 				$i++;
 			}
@@ -216,14 +221,14 @@ class xJACLhandler extends xJACLhandlerCommon
 
 	function aclList()
 	{
-		$db = &JFactory::getDBO();
+		$db = JFactory::getDBO();
 
 		$list = array();
 
-		$query = 'SELECT `id`, `title`'
-				. ' FROM #__usergroups'
-				;
-		$db->setQuery( $query );
+		$db->setQuery(
+			'SELECT `id`, `title`'
+			. ' FROM #__usergroups'
+		);
 
 		$acllist = $db->loadObjectList();
 
@@ -241,32 +246,32 @@ class xJACLhandler extends xJACLhandlerCommon
 
 	function getLowerACLGroups( $group_id )
 	{
-		$db = &JFactory::getDBO();
+		$db = JFactory::getDBO();
 
-		$query = 'SELECT g2.id'
-				. ' FROM #__usergroups AS g1'
-				. ' INNER JOIN #__usergroups AS g2 ON g1.lft > g2.lft AND g1.rgt < g2.rgt'
-				. ' WHERE g1.id = ' . $group_id
-				. ' GROUP BY g2.id'
-				. ' ORDER BY g2.lft'
-				;
-		$db->setQuery( $query );
+		$db->setQuery(
+			'SELECT g2.id'
+			. ' FROM #__usergroups AS g1'
+			. ' INNER JOIN #__usergroups AS g2 ON g1.lft > g2.lft AND g1.rgt < g2.rgt'
+			. ' WHERE g1.id = '.$group_id
+			. ' GROUP BY g2.id'
+			. ' ORDER BY g2.lft'
+		);
 
 		return xJ::getDBArray( $db );
 	}
 
 	function getHigherACLGroups( $group_id )
 	{
-		$db = &JFactory::getDBO();
+		$db = JFactory::getDBO();
 
-		$query = 'SELECT g2.id'
-				. ' FROM #__usergroups AS g1'
-				. ' INNER JOIN #__usergroups AS g2 ON g1.lft < g2.lft AND g1.rgt > g2.rgt'
-				. ' WHERE g1.id = ' . $group_id
-				. ' GROUP BY g2.id'
-				. ' ORDER BY g2.lft'
-				;
-		$db->setQuery( $query );
+		$db->setQuery(
+			'SELECT g2.id'
+			. ' FROM #__usergroups AS g1'
+			. ' INNER JOIN #__usergroups AS g2 ON g1.lft < g2.lft AND g1.rgt > g2.rgt'
+			. ' WHERE g1.id = '.$group_id
+			. ' GROUP BY g2.id'
+			. ' ORDER BY g2.lft'
+		);
 
 		return xJ::getDBArray( $db );
 	}
@@ -276,7 +281,7 @@ class xJSessionHandler extends xJSessionHandlerCommon
 {
 	function instantGIDchange( $userid, $gid, $removegid=array(), $sessionextra=null )
 	{
-		$user = &JFactory::getUser();
+		$user = JFactory::getUser();
 
 		if ( !is_array( $gid ) && !empty( $gid ) ) {
 			$gid = array( $gid );
@@ -291,6 +296,8 @@ class xJSessionHandler extends xJSessionHandlerCommon
 		if ( !empty( $removegid ) ) {
 			xJACLhandler::removeGIDs( (int) $userid, $removegid );
 		}
+
+		$info = array();
 
 		// Set GID and usertype
 		if ( !empty( $gid ) ) {
@@ -316,7 +323,7 @@ class xJSessionHandler extends xJSessionHandlerCommon
 		}
 
 		if ( isset( $session['user'] ) ) {
-			$user = &JFactory::getUser();
+			$user = JFactory::getUser();
 
 			$sgsids = JAccess::getGroupsByUser( $userid );
 
@@ -336,13 +343,13 @@ class xJSessionHandler extends xJSessionHandlerCommon
 				}
 			}
 
-			$db = &JFactory::getDBO();
+			$db = JFactory::getDBO();
 
-			$query = 'SELECT `title`, `id`'
-					. ' FROM #__usergroups'
-					. ' WHERE `id` IN (' . implode( ',', $sgsids ) . ')'
-					;
-			$db->setQuery( $query );
+			$db->setQuery(
+				'SELECT `title`, `id`'
+				. ' FROM #__usergroups'
+				. ' WHERE `id` IN ('.implode( ',', $sgsids ).')'
+			);
 			$sgslist = $db->loadObjectList();
 
 			$sgs = array();
@@ -366,26 +373,23 @@ class xJSessionHandler extends xJSessionHandlerCommon
 			$session['user']->set( '_authGroups', xJSessionHandler::getGroupsByUser($userid) );
 		}
 
-		$this->putSession( $userid, $session, $gid[0], $info[$gid[0]] );
+		return $this->putSession($userid, $session, $gid[0], $info[$gid[0]]);
 	}
 
 	function putSession( $userid, $data, $gid=null, $gid_name=null )
 	{
-		$db = &JFactory::getDBO();
+		$db = JFactory::getDBO();
 
-		$sdata = $this->joomserializesession( array( $this->sessionkey => $data) );
+		$sdata = $this->joomserializesession( array($this->sessionkey => $data) );
 
-		if ( defined( 'JPATH_MANIFESTS' ) ) {
-			$query = 'UPDATE #__session'
-					. ' SET `data` = \'' . xJ::escape( $db, $sdata ) . '\''
-					. ' WHERE `userid` = \'' . (int) $userid . '\''
-					;
-		}
+		$db->setQuery(
+			'UPDATE #__session'
+			. ' SET `data` = \''.xJ::escape( $db, $sdata ).'\''
+			. ' WHERE `userid` = \''.(int) $userid.'\''
+		);
 
-		$db->setQuery( $query );
 		$db->query() or die( $db->stderr() );
+
+		return true;
 	}
-
 }
-
-?>

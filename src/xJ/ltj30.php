@@ -8,7 +8,7 @@ class xJ
 
 	static function escape( $db, $value )
 	{
-		return $db->getEscaped( $value );
+		return $db->getEscaped($value);
 	}
 
 	static function token()
@@ -23,8 +23,6 @@ class xJ
 
 	static function sendMail( $sender, $sender_name, $recipient, $subject, $message, $html=null, $cc=null, $bcc=null, $attach=null )
 	{
-		JUTility::sendMail( $sender, $sender_name, $recipient, $subject, $message, $html, $cc, $bcc, $attach );
+		JUTility::sendMail($sender, $sender_name, $recipient, $subject, $message, $html, $cc, $bcc, $attach);
 	}
 }
-
-?>
