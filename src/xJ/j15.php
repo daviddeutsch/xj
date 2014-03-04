@@ -3,9 +3,7 @@ class xJLanguageHandler extends xJLanguageHandlerCommon
 {
 	static function loadList( $list )
 	{
-		if ( empty($list) ) {
-			return;
-		}
+		if ( empty($list) ) return;
 
 		$lang =& JFactory::getLanguage();
 

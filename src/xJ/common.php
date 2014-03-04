@@ -29,12 +29,12 @@ class xJACLhandlerCommon
 	{
 		$db = JFactory::getDBO();
 
-		$query = 'SELECT `id`'
-				. ' FROM #__usergroups'
-				. ' WHERE `id` = 8'
-				. ($regular_admins ? ' OR `id` = 7' : '')
-				;
-		$db->setQuery($query);
+		$db->setQuery(
+			'SELECT `id`'
+			. ' FROM #__usergroups'
+			. ' WHERE `id` = 8'
+			. ($regular_admins ? ' OR `id` = 7' : '')
+		);
 
 		return xJ::getDBArray($db);
 	}
@@ -45,15 +45,11 @@ class xJACLhandlerCommon
 		return array(6);
 	}
 
-	static function getUsersByGroup( $group )
+	static function getUsersByGroup( $groups )
 	{
 		$acl = JFactory::getACL();
 
-		if ( is_array($group) ) {
-			$groups = $group;
-		} else {
-			$groups[] = $group;
-		}
+		if ( !is_array($groups) ) $groups = array($groups);
 
 		$users = array();
 		foreach ( $groups as $group_id ) {
@@ -67,11 +63,11 @@ class xJACLhandlerCommon
 	{
 		$db = JFactory::getDBO();
 
-		$query = 'SELECT `id`, `name`, `email`, `sendEmail`'
+		$db->setQuery(
+			'SELECT `id`, `name`, `email`, `sendEmail`'
 			. ' FROM #__users'
 			. ' WHERE id IN ('.implode(',', $users).')'
-			;
-		$db->setQuery($query);
+		);
 
 		return $db->loadObjectList();
 	}
@@ -81,12 +77,13 @@ class xJACLhandlerCommon
 		$db = JFactory::getDBO();
 
 		foreach ( $gids as $gid ) {
-			$query = 'DELETE'
-					. ' FROM #__user_usergroup_map'
-					. ' WHERE `user_id` = \''.((int)$userid).'\''
-					. ' AND `group_id` = \''.((int)$gid).'\''
-					;
-			$db->setQuery($query);
+			$db->setQuery(
+				'DELETE'
+				. ' FROM #__user_usergroup_map'
+				. ' WHERE `user_id` = \''.((int)$userid).'\''
+				. ' AND `group_id` = \''.((int)$gid).'\''
+			);
+
 			$db->query();
 		}
 	}
@@ -191,11 +188,12 @@ class xJSessionHandlerCommon
 	{
 		$db = JFactory::getDBO();
 
-		$query = 'SELECT data'
-		. ' FROM #__session'
-		. ' WHERE `userid` = \''.(int) $userid.'\''
-		;
-		$db->setQuery( $query );
+		$db->setQuery(
+			'SELECT data'
+			. ' FROM #__session'
+			. ' WHERE `userid` = \''.(int) $userid.'\''
+		);
+
 		$data = $db->loadResult();
 
 		if ( !empty($data) ) {

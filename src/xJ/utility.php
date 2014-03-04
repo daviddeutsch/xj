@@ -223,11 +223,7 @@ class xJUtility
 		$result = $db->loadObject();
 
 		if( is_object($result) ) {
-			if ( $result->Field == $column ) {
-				return true;
-			} else {
-				return false;
-			}
+			return $result->Field == $column;
 		} else {
 			return false;
 		}
@@ -235,20 +231,16 @@ class xJUtility
 
 	static function dropColifExists( $component, $column, $table )
 	{
-		if ( self::ColumninTable( $component, $column, $table ) ) {
-			return self::dropColumn( $component, $table, $column );
-		}
+		if ( !self::ColumninTable( $component, $column, $table ) ) return null;
 
-		return null;
+		return self::dropColumn( $component, $table, $column );
 	}
 
 	static function addColifNotExists( $component, $column, $options, $table )
 	{
-		if ( !self::ColumninTable( $component, $column, $table ) ) {
-			return self::addColumn( $component, $table, $column, $options );
-		}
+		if ( self::ColumninTable( $component, $column, $table ) ) return null;
 
-		return null;
+		return self::addColumn( $component, $table, $column, $options );
 	}
 
 	static function addColumn( $component, $table, $column, $options )
