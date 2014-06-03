@@ -40,7 +40,7 @@ class xJLanguageHandler extends xJLanguageHandlerCommon
 
 class xJACLhandler extends xJACLhandlerCommon
 {
-	function getSuperAdmins()
+	static function getSuperAdmins()
 	{
 		$groups = xJACLhandler::getAdminGroups();
 
@@ -49,7 +49,7 @@ class xJACLhandler extends xJACLhandlerCommon
 		return xJACLhandler::getUserObjects( $users );
 	}
 
-	function setGID( $userid, $gid, $gid_name )
+	static function setGID( $userid, $gid, $gid_name )
 	{
 		$db = JFactory::getDBO();
 
@@ -73,7 +73,7 @@ class xJACLhandler extends xJACLhandlerCommon
 		}
 	}
 
-	function setGIDsTakeNames( $userid, $gid )
+	static function setGIDsTakeNames( $userid, $gid )
 	{
 		$db = JFactory::getDBO();
 
@@ -88,7 +88,7 @@ class xJACLhandler extends xJACLhandlerCommon
 		return $gid_name;
 	}
 
-	function adminBlock( $admin, $manager )
+	static function adminBlock( $admin, $manager )
 	{
 		$user = JFactory::getUser();
 
@@ -115,7 +115,7 @@ class xJACLhandler extends xJACLhandlerCommon
 		}
 	}
 
-	function userDelete( $userid, $msg )
+	static function userDelete( $userid, $msg )
 	{
 		$user = JFactory::getUser();
 
@@ -164,7 +164,7 @@ class xJACLhandler extends xJACLhandlerCommon
 		return true;
 	}
 
-	function getGroupTree( $ex=array() )
+	static function getGroupTree( $ex=array() )
 	{
 		$acl = JFactory::getACL();
 
@@ -214,12 +214,12 @@ class xJACLhandler extends xJACLhandlerCommon
 		return $gtree;
 	}
 
-	function countAdmins()
+	static function countAdmins()
 	{
 		return count( xJACLhandler::getUsersByGroup( xJACLhandler::getAdminGroups() ) );
 	}
 
-	function aclList()
+	static function aclList()
 	{
 		$db = JFactory::getDBO();
 
@@ -244,7 +244,7 @@ class xJACLhandler extends xJACLhandlerCommon
 		return $list;
 	}
 
-	function getLowerACLGroups( $group_id )
+	static function getLowerACLGroups( $group_id )
 	{
 		$db = JFactory::getDBO();
 
@@ -260,7 +260,7 @@ class xJACLhandler extends xJACLhandlerCommon
 		return xJ::getDBArray( $db );
 	}
 
-	function getHigherACLGroups( $group_id )
+	static function getHigherACLGroups( $group_id )
 	{
 		$db = JFactory::getDBO();
 
